@@ -1,0 +1,112 @@
+# install-services.yml
+
+---
+- hosts: jenk
+  become: true
+  tasks:
+    - name: Updating all existing packages
+      yum:
+        name: '*'
+        state: latest
+        update_only: yes
+    - name: Setting JAVA_HOME environment variable...
+      copy:
+        dest: "/etc/profile.d/ter_java_.sh"
+        content: |
+          #!/bin/sh
+          export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.252.b09-2.amzn2.0.1.x86_64
+          export PATH=$PATH:$JAVA_HOME/bin
+          export PATH=/opt/apache-maven-3.6.3/bin:$PATH    
+    
+    - name: Installing Java 1.8...
+      yum:
+        name: java-1.8.0-openjdk-devel
+        state: present
+    
+    - name: Install ansible...
+      shell: amazon-linux-extras install ansible2
+    
+    - name: Downloading Apache Maven... 
+      get_url: url=http://apache.claz.org/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz dest=/tmp/apache-maven-3.6.3-bin.tar.gz
+    - name: Untar Maven 
+      shell: chdir=/tmp creates=/opt/apache-maven-3.6.3 tar -zxf apache-maven-3.6.3-bin.tar.gz -C /opt
+    - name: Update path for maven use
+      shell: export PATH=/opt/apache-maven-3.6.3/bin:$PATH
+    - name: Create a symbolic link
+      file:
+        src: /opt/apache-maven-3.6.3/bin/mvn
+        dest: /usr/bin/mvn
+        state: link
+
+    - name: Installing GIT...
+      yum:
+        name: git
+        state: present
+    
+    - name: Downloading Jenkins...
+      get_url:
+        url: https://pkg.jenkins.io/redhat/jenkins.repo
+        dest: /etc/yum.repos.d/jenkins.repo
+    - name: Importing jenkins key...
+      rpm_key:
+        state: present
+        key: https://pkg.jenkins.io/redhat/jenkins.io.key
+    - name: Installing jenkins...
+      yum:
+        name: http://mirrors.jenkins-ci.org/redhat/jenkins-2.248-1.1.noarch.rpm
+        #name: jenkins
+        state: present
+    - name: start jenkins
+      systemd:
+        name: jenkins
+        state: started
+    - name: enable jenkins
+      systemd:
+        name: jenkins
+        enabled: true
+
+    - name: Create ansible directory structures..1
+      file:
+        path: /tmp/ansible-temp
+        state: directory
+    - name: Create ansible directory structures..2
+      file:
+        path: /tmp/ansible-temp/roles
+        state: directory        
+
+    - name: downloading geerlingguy-java in EC2 server
+      shell:
+        chdir: /tmp/ansible-temp/roles
+        cmd: git clone https://github.com/geerlingguy/ansible-role-java.git
+    - name: Renaming directories 
+      shell:
+        chdir: /tmp/ansible-temp/roles
+        cmd: mv ansible-role-java geerlingguy.java
+    - name: Downloading sonarqube in Ec2 server
+      shell:
+        chdir: /tmp/ansible-temp/roles
+        cmd: git clone --branch v1.0.10 https://github.com/lrk/ansible-role-sonarqube.git 
+    - name: Copying sonar.yml from local to EC2 server
+      copy:
+        src: ./sonar.yml
+        dest: /tmp/ansible-temp
+    - name: Installing sonarqube
+      shell:
+        chdir: /tmp/ansible-temp
+        cmd: ansible-playbook sonar.yml
+    - name: Installing docker...
+      shell:
+        cmd: amazon-linux-extras install docker #; yum install docker ; service docker start ; sudo usermod -a -G docker ec2-user; systemctl enable docker
+    - name: Starting docker
+      systemd:
+        name: docker
+        state: started
+    - name: enabling docker
+      systemd:
+        name: docker
+        enabled: true
+    - name: enabling ec2-user to use docker
+      shell:
+        cmd: sudo usermod -a -G docker ec2-user
+
+
