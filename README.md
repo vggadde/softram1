@@ -5,7 +5,7 @@ Pre-requisites:
 2. aws-cli/1.18.69 Python/3.6.9 Linux/4.15.0-112-generic botocore/1.16.19
 3. ansible 2.5.1
 
-Steps:
+Steps (less than 10 mins to execute):
 1. git clone https://github.com/vggadde/softram1.git
 2. cd softram1
 3. Execute "ssh-keygen", create a public private keypair called 'softramtest'
