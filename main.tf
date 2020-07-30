@@ -110,7 +110,7 @@ resource "aws_security_group" "softram_jenk_sg" {
 
 resource "aws_key_pair" "wp_auth" {
 	key_name = var.key_name
-	public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCq5bqH/YT4BT//zqkcstJHOajtZXpS+2xKQau0XbaN5JTBjLNm9dxUrUdvBSghJVxenJqzAQrFJnhXZ9RIX8welMSdbN4EC9545VUxwONWwYGKl66lZF/gITUOv9s1QIGIKCDVHxz6HgCEulrsjkrcwRy/HNhGMOpQ9I1DGjpq454ZC3mSAFQrYE+Q7vcFa6KfHQYnncBKFlSlb5UMmC6ckxgkq/xtE3ZGk9JdUynBpOahDFn0EmWd7d5kQDoeD0+mGxI9vF8ZgkGZQv/JgYyeN0Zlb+FOTcRjwhqUXY4c6auEQXkzAUJol3JHIqsR1vtHgYjD/4fr6E3U4j/nXCLp v@v-VirtualBox"	
+	public_key = file("./softramtest.pub")	
 }
 
 resource "aws_instance" "softram_jenk" {
