@@ -8,7 +8,7 @@ aws-cli/1.18.69 Python/3.6.9 Linux/4.15.0-112-generic botocore/1.16.19
 
 ansible 2.5.1
 
-Update the public key logic in main.tf
+Create softramtest public private keypair
 
 aws configure --profile superhero
 
