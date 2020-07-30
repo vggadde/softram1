@@ -12,6 +12,5 @@ cidrs			= {
   rds3     = "10.0.7.0/24"
 }
 key_name		= "softramtest"
-public_key_path		= "/home/v/Desktop/terransible/lab_scripts/kryptonite.pub"
 dev_instance_type	= "t3.medium"
 dev_ami			= "ami-08f3d892de259504d"
