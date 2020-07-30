@@ -1,0 +1,25 @@
+---
+- hosts: jenk
+  become: true
+  tasks:
+    - name: create symbolic link for docker-compose to work correctly
+      shell:
+        cmd: sudo ln -sfn /usr/local/bin/docker-compose /usr/bin/docker-compose    
+
+    - name: remove source code directory if exists
+      shell:
+        cmd: rm -rf /home/ec2-user/praqma-jenkins-casc
+
+    - name: download repo in order to create jenkins image and start container
+      shell:
+        cmd: git clone https://github.com/vggadde/praqma-jenkins-casc.git /home/ec2-user/praqma-jenkins-casc
+
+    - name: kill all existing containers
+      shell:
+        cmd: docker-compose kill
+        chdir: /home/ec2-user/praqma-jenkins-casc/
+   
+    - name: run jenkins
+      shell:
+        cmd: docker-compose up --build --detach
+        chdir: /home/ec2-user/praqma-jenkins-casc/
